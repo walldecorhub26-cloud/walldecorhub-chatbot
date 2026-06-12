@@ -102,25 +102,30 @@ async function getSalesReply(userMessage, session) {
 
 // ── Webhook ──
 app.post("/webhook", async (req, res) => {
-  const twiml = new twilio.twiml.MessagingResponse();
   const incomingMsg = (req.body.Body || "").trim();
   const from = req.body.From || "";
 
   console.log(`📩 From: ${from} | Message: "${incomingMsg}"`);
 
   const session = getSession(from);
-  let reply = "";
+  let reply = "Assalam o alaikum! Main Walli hoon. Kya mein aapki madad kar sakta hoon? 😊";
 
   try {
     reply = await getSalesReply(incomingMsg, session);
+    console.log(`✅ Final reply to send: ${reply}`);
   } catch (err) {
     console.error("❌ Error:", err.message);
-    reply = `Maafi chahta hoon, thodi technical dikkat aa gayi! 😅\nSeedha contact karein:\n📞 *03041256202*`;
+    reply = `Maafi chahta hoon! Seedha contact: 03041256202`;
   }
 
+  const twiml = new twilio.twiml.MessagingResponse();
   twiml.message(reply);
+  
+  const xmlResponse = twiml.toString();
+  console.log(`📤 Sending XML response: ${xmlResponse}`);
+  
   res.type("text/xml");
-  res.send(twiml.toString());
+  res.send(xmlResponse);
 });
 
 // ── Health check ──
