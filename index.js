@@ -78,7 +78,7 @@ async function getSalesReply(userMessage, session) {
       { role: "system", content: SYSTEM_PROMPT },
       ...session.history,
     ],
-    model: "mixtral-8x7b-32768",
+    model: "llama-3.1-70b-versatile",
     max_tokens: 300,
     temperature: 0.7,
   });
