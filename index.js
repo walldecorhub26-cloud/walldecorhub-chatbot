@@ -1,12 +1,13 @@
 const express = require("express");
 const twilio = require("twilio");
-const Anthropic = require("@anthropic-ai/sdk");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // ── Session store (conversation history per customer) ──
 const sessions = {};
@@ -64,24 +65,25 @@ Important:
 - Har message ke end mein agle step ki taraf le jao
 - Order ke liye details lene ke baad: "Shukriya! Hum 2-4 ghante mein aapko quote bhejenge ✅"`;
 
-// ── AI Reply ──
+// ── AI Reply (Gemini) ──
 async function getSalesReply(userMessage, session) {
-  session.history.push({ role: "user", content: userMessage });
+  session.history.push({ role: "user", parts: [{ text: userMessage }] });
 
   // Keep last 20 messages only
   if (session.history.length > 20) {
     session.history = session.history.slice(-20);
   }
 
-  const response = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 300,
-    system: SYSTEM_PROMPT,
-    messages: session.history,
+  const chat = model.startChat({
+    history: session.history.slice(0, -1), // all except the latest message
+    systemInstruction: { role: "system", parts: [{ text: SYSTEM_PROMPT }] },
+    generationConfig: { maxOutputTokens: 300 },
   });
 
-  const reply = response.content[0].text;
-  session.history.push({ role: "assistant", content: reply });
+  const result = await chat.sendMessage(userMessage);
+  const reply = result.response.text();
+
+  session.history.push({ role: "model", parts: [{ text: reply }] });
 
   return reply;
 }
