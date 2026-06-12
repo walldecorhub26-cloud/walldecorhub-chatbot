@@ -66,6 +66,8 @@ Important:
 
 // ── AI Reply (Groq - Free & Fast) ──
 async function getSalesReply(userMessage, session) {
+  console.log("🤖 getSalesReply called with:", userMessage);
+  
   session.history.push({ role: "user", content: userMessage });
 
   // Keep last 20 messages only
@@ -73,20 +75,29 @@ async function getSalesReply(userMessage, session) {
     session.history = session.history.slice(-20);
   }
 
-  const response = await groq.chat.completions.create({
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      ...session.history,
-    ],
-    model: "llama-3.3-70b-versatile",
-    max_tokens: 300,
-    temperature: 0.7,
-  });
+  try {
+    console.log("📡 Calling Groq API...");
+    const response = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        ...session.history,
+      ],
+      model: "llama-3.3-70b-versatile",
+      max_tokens: 300,
+      temperature: 0.7,
+    });
 
-  const reply = response.choices[0].message.content;
-  session.history.push({ role: "assistant", content: reply });
+    console.log("✅ Groq response received");
+    const reply = response.choices[0].message.content;
+    console.log("💬 Reply generated:", reply);
+    
+    session.history.push({ role: "assistant", content: reply });
 
-  return reply;
+    return reply;
+  } catch (error) {
+    console.error("❌ Groq API Error:", error.message);
+    throw error;
+  }
 }
 
 // ── Webhook ──
