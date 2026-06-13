@@ -17,6 +17,25 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+async function sendLeadEmail(customerMessage, aiReply) {
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: "waldecorhub26@gmail.com",
+      subject: "New WallDecorHub AI Lead",
+      html: `
+        <h2>New Customer Inquiry</h2>
+        <p><strong>Customer:</strong> ${customerMessage}</p>
+        <p><strong>AI Reply:</strong> ${aiReply}</p>
+      `
+    });
+
+    console.log("Lead Email Sent");
+  } catch (error) {
+    console.error("Email Error:", error.message);
+  }
+}
+
 // ── Session store (conversation history per customer) ──
 const sessions = {};
 
