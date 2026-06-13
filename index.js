@@ -1,6 +1,7 @@
 const express = require("express");
 const twilio = require("twilio");
 const Groq = require("groq-sdk");
+const nodemailer = require("nodemailer");
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
