@@ -19,6 +19,8 @@ const transporter = nodemailer.createTransport({
 
 async function sendLeadEmail(customerMessage, aiReply) {
   try {
+    console.log("Attempting to send email...");
+    
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: "waldecorhub26@gmail.com",
