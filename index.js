@@ -169,7 +169,6 @@ app.post("/chat", async (req, res) => {
 
   try {
     const reply = await getSalesReply(userMessage, session);
-    await sendLeadEmail(userMessage, reply);
     res.json({ reply });
   } catch (err) {
     console.error("❌ Error:", err.message);
