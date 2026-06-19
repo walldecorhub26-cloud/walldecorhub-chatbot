@@ -30,7 +30,7 @@ async function sendLeadEmail(customerMessage, aiReply) {
       `
     });
 
-    console.log("Lead Email Sent");
+    console.log("Lead Email Sent Successfully");
   } catch (error) {
     console.error("Email Error:", error.message);
   }
