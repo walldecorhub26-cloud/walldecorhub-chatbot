@@ -535,7 +535,7 @@ app.get("/", (req, res) => {
 
         const botMsg = document.createElement('div');
         botMsg.className = 'message bot';
-        botMsg.innerHTML = (data.reply || 'Shukriya! Hamari team jald rabta karegi.').replace(/\n/g, '<br>');
+        botMsg.innerHTML = (data.reply || 'Shukriya! Hamari team jald rabta karegi.').replace(/\\n/g, '<br>');
         messagesDiv.appendChild(botMsg);
 
         // Show PDF card if room type detected
